@@ -1,4 +1,4 @@
-# ClinIQ — Clinical Intelligence & Quality Gap Analytics Platform
+# ClinIQ - Clinical Intelligence & Quality Gap Analytics Platform
 
 > A modular, disease-agnostic framework for identifying patients who qualify for evidence-based care interventions but aren't receiving them — across any clinical population.
 
