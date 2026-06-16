@@ -67,16 +67,23 @@ st.markdown("""
 
 
 # ── Snowflake connection ──────────────────────────────────────────────────────
+def _secret(key, default=None):
+    """Read from st.secrets (Streamlit Cloud) with fallback to os.getenv (local)."""
+    try:
+        return st.secrets[key]
+    except Exception:
+        return os.getenv(key, default)
+
 @st.cache_resource(show_spinner=False)
 def get_conn():
     return snowflake.connector.connect(
-        account  = os.getenv("SNOWFLAKE_ACCOUNT"),
-        user     = os.getenv("SNOWFLAKE_USER"),
-        password = os.getenv("SNOWFLAKE_PASSWORD"),
-        warehouse= os.getenv("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
+        account  = _secret("SNOWFLAKE_ACCOUNT"),
+        user     = _secret("SNOWFLAKE_USER"),
+        password = _secret("SNOWFLAKE_PASSWORD"),
+        warehouse= _secret("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
         database = "CLINIQ",
         schema   = "DBT_DEV",
-        role     = os.getenv("SNOWFLAKE_ROLE", "SYSADMIN"),
+        role     = _secret("SNOWFLAKE_ROLE", "SYSADMIN"),
     )
 
 @st.cache_data(ttl=300, show_spinner=False)
