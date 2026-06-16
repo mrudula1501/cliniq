@@ -689,6 +689,6 @@ python agent/cliniq_agent.py \
 **Mrudula (Mansi) Deshmukh**
 MS Data Science, University at Buffalo
 Healthcare Data Science | Clinical AI | EHR Analytics
-[mrudula1501.github.io](https://mrudula1501.github.io) · [LinkedIn](https://linkedin.com/in/mrudula-deshmukh)
+[mrudula1501.github.io](https://mrudula1501.github.io) · [LinkedIn](https://www.linkedin.com/in/dmrudula/)
 
 *"From circuits to clinical AI — building what matters."*
