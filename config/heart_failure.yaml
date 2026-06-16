@@ -1,0 +1,40 @@
+condition:
+  name: heart_failure
+  display_name: "Heart Failure"
+  description: "Patients with HF diagnosis not receiving guideline-directed medical therapy (GDMT)"
+
+diagnosis_codes:
+  icd10:
+    - I50.0   # Congestive heart failure
+    - I50.1   # Left ventricular failure
+    - I50.9   # Heart failure, unspecified
+    - I50.20  # Unspecified systolic heart failure
+    - I50.30  # Unspecified diastolic heart failure
+
+target_interventions:
+  medications:
+    beta_blockers:
+      display: "Beta-blocker therapy"
+      rxnorm_codes: ["866511", "854901", "200031"]
+      generic_names: ["carvedilol", "metoprolol succinate", "bisoprolol"]
+    ace_arb:
+      display: "ACE inhibitor or ARB therapy"
+      rxnorm_codes: ["29046", "214354", "18867"]
+      generic_names: ["lisinopril", "enalapril", "losartan", "valsartan"]
+
+gap_definition:
+  logic: "patient has qualifying diagnosis AND no active target medication in last 12 months"
+  lookback_days: 365
+  encounter_required: true
+  min_encounters: 1
+
+quality_measure:
+  name: "HF_GDMT_GAP"
+  hedis_reference: "CBP"   # Closest HEDIS analog
+  numerator: "patients receiving GDMT"
+  denominator: "patients with HF diagnosis + qualifying encounter"
+
+output:
+  cohort_table: "mart_patient_cohort"
+  gap_table: "mart_gap_registry"
+  summary_table: "mart_quality_summary"

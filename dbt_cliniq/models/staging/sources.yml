@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: synthea_raw
+    database: CLINIQ
+    schema: SYNTHEA_RAW
+    description: "Raw Synthea synthetic EHR data loaded from CSV exports"
+    tables:
+      - name: patients
+        description: "Synthetic patient demographics"
+        columns:
+          - name: id
+            description: "Unique patient identifier"
+            tests:
+              - not_null
+              - unique
+          - name: birthdate
+            tests: [not_null]
+          - name: gender
+            tests: [not_null]
+
+      - name: conditions
+        description: "Patient diagnosis records (ICD-10 coded)"
+        columns:
+          - name: patient
+            tests: [not_null]
+          - name: code
+            tests: [not_null]
+
+      - name: medications
+        description: "Patient medication records (RxNorm coded)"
+        columns:
+          - name: patient
+            tests: [not_null]
+          - name: code
+            tests: [not_null]
+
+      - name: encounters
+        description: "Clinical encounters / visits"
+        columns:
+          - name: id
+            tests: [not_null, unique]
+          - name: patient
+            tests: [not_null]
+
+      - name: observations
+        description: "Clinical observations and lab results (LOINC coded)"
+        columns:
+          - name: patient
+            tests: [not_null]
+          - name: code
+            tests: [not_null]

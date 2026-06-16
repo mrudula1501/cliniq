@@ -1,0 +1,40 @@
+condition:
+  name: diabetes_type2
+  display_name: "Type 2 Diabetes"
+  description: "Patients with T2DM not receiving statin therapy or with uncontrolled HbA1c"
+
+diagnosis_codes:
+  icd10:
+    - E11.9   # Type 2 diabetes without complications
+    - E11.65  # Type 2 diabetes with hyperglycemia
+    - E11.0   # Type 2 diabetes with hyperosmolarity
+
+target_interventions:
+  medications:
+    statins:
+      display: "Statin therapy"
+      rxnorm_codes: ["301542", "83367", "861634"]
+      generic_names: ["atorvastatin", "rosuvastatin", "simvastatin"]
+  lab_targets:
+    hba1c:
+      display: "HbA1c < 8%"
+      loinc_code: "4548-4"
+      threshold: 8.0
+      direction: "less_than"
+
+gap_definition:
+  logic: "patient has T2DM diagnosis AND (no statin in last 12 months OR last HbA1c >= 8.0)"
+  lookback_days: 365
+  encounter_required: true
+  min_encounters: 1
+
+quality_measure:
+  name: "DM_CONTROL_GAP"
+  hedis_reference: "CDC"
+  numerator: "patients with controlled HbA1c + statin"
+  denominator: "patients with T2DM diagnosis + qualifying encounter"
+
+output:
+  cohort_table: "mart_patient_cohort"
+  gap_table: "mart_gap_registry"
+  summary_table: "mart_quality_summary"

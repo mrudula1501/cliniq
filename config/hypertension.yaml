@@ -1,0 +1,49 @@
+condition:
+  name: hypertension
+  display_name: "Hypertension"
+  description: "Patients with hypertension diagnosis not on antihypertensive therapy or with uncontrolled BP"
+
+diagnosis_codes:
+  icd10:
+    - I10    # Essential (primary) hypertension
+    - I11.9  # Hypertensive heart disease without heart failure
+    - I12.9  # Hypertensive chronic kidney disease
+    - I13.10 # Hypertensive heart and CKD without heart failure
+
+target_interventions:
+  medications:
+    ace_arb:
+      display: "ACE inhibitor or ARB"
+      rxnorm_codes: ["29046", "214354", "18867", "83515"]
+      generic_names: ["lisinopril", "enalapril", "losartan", "ramipril"]
+    calcium_channel_blockers:
+      display: "Calcium channel blocker"
+      rxnorm_codes: ["17767", "73494", "866427"]
+      generic_names: ["amlodipine", "nifedipine", "diltiazem"]
+    thiazide_diuretics:
+      display: "Thiazide diuretic"
+      rxnorm_codes: ["310798", "198369"]
+      generic_names: ["hydrochlorothiazide", "chlorthalidone"]
+  lab_targets:
+    systolic_bp:
+      display: "Systolic BP < 140 mmHg"
+      loinc_code: "8480-6"
+      threshold: 140
+      direction: "less_than"
+
+gap_definition:
+  logic: "patient has HTN diagnosis AND (no antihypertensive medication in last 12 months OR last systolic BP >= 140)"
+  lookback_days: 365
+  encounter_required: true
+  min_encounters: 1
+
+quality_measure:
+  name: "HTN_CONTROL_GAP"
+  hedis_reference: "CBP"  # Controlling Blood Pressure
+  numerator: "patients with controlled BP on antihypertensive therapy"
+  denominator: "patients with HTN diagnosis + qualifying encounter"
+
+output:
+  cohort_table: "mart_patient_cohort"
+  gap_table: "mart_gap_registry"
+  summary_table: "mart_quality_summary"

@@ -1,0 +1,28 @@
+dbt_cliniq:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "<YOUR_ACCOUNT>.snowflakecomputing.com"   # e.g. xy12345.us-east-1
+      user: "<YOUR_USER>"
+      password: "<YOUR_PASSWORD>"
+      role: SYSADMIN
+      database: CLINIQ
+      warehouse: COMPUTE_WH
+      schema: dbt_dev
+      threads: 4
+      client_session_keep_alive: false
+
+    prod:
+      type: snowflake
+      account: "<YOUR_ACCOUNT>.snowflakecomputing.com"
+      user: "<YOUR_USER>"
+      password: "<YOUR_PASSWORD>"
+      role: SYSADMIN
+      database: CLINIQ
+      warehouse: COMPUTE_WH
+      schema: dbt_prod
+      threads: 8
+      client_session_keep_alive: false
+
+# Copy this file to ~/.dbt/profiles.yml (do NOT commit credentials to git)

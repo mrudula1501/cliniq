@@ -1,0 +1,42 @@
+# Environment & secrets
+.env
+*.env.local
+
+# Synthea raw data (large — keep out of git)
+data/synthea/*.csv
+data/synthea/*.json
+
+# dbt artifacts
+dbt_cliniq/target/
+dbt_cliniq/dbt_packages/
+dbt_cliniq/logs/
+
+# Audit log (contains patient identifiers — don't commit)
+audit_log/
+
+# Gap engine outputs
+gap_engine/output/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Power BI (binary, can't diff — manage separately)
+dashboard/*.pbix
+
+# OS
+.DS_Store
+Thumbs.db
