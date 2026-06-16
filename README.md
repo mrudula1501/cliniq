@@ -1,6 +1,6 @@
 # ClinIQ - Clinical Intelligence & Quality Gap Analytics Platform
 
-> A modular, disease-agnostic framework for identifying patients who qualify for evidence-based care interventions but aren't receiving them — across any clinical population.
+> A modular, disease-agnostic framework for identifying patients who qualify for evidence-based care interventions but aren't receiving them - across any clinical population.
 
 ---
 
@@ -10,9 +10,9 @@ Most clinical quality work is disease-specific. Someone builds a diabetes dashbo
 
 ClinIQ takes a different approach: **one architecture, any disease.**
 
-You change a YAML config file — the condition, the ICD-10 codes, the target medications, the quality measure — and the same pipeline runs for heart failure, diabetes, hypertension, oncology screening, or anything else. The data layer, the gap detection logic, the AI abstraction agent, and the dashboard are all reusable.
+You change a YAML config file — the condition, the ICD-10 codes, the target medications, the quality measure - and the same pipeline runs for heart failure, diabetes, hypertension, oncology screening, or anything else. The data layer, the gap detection logic, the AI abstraction agent, and the dashboard are all reusable.
 
-The first demo use case is **heart failure GDMT gap detection**: finding patients diagnosed with heart failure who qualify for guideline-directed medical therapy (beta-blockers, ACE inhibitors/ARBs) but are not currently receiving it. This mirrors a real and unsolved problem across health systems — patients fall through the cracks not because the care doesn't exist, but because no one can identify them at scale.
+The first demo use case is **heart failure GDMT gap detection**: finding patients diagnosed with heart failure who qualify for guideline-directed medical therapy (beta-blockers, ACE inhibitors/ARBs) but are not currently receiving it. This mirrors a real and unsolved problem across health systems - patients fall through the cracks not because the care doesn't exist, but because no one can identify them at scale.
 
 ---
 
@@ -187,11 +187,11 @@ quality_measure:
 
 ---
 
-## Data layer — dbt models
+## Data layer - dbt models
 
 ### Staging models
 
-**`stg_patients.sql`** — clean and normalize the Synthea patients table
+**`stg_patients.sql`** - clean and normalize the Synthea patients table
 ```sql
 with source as (
     select * from {{ source('synthea_raw', 'patients') }}
@@ -217,7 +217,7 @@ cleaned as (
 select * from cleaned where row_num = 1
 ```
 
-**`stg_conditions.sql`** — normalize diagnosis codes
+**`stg_conditions.sql`** - normalize diagnosis codes
 ```sql
 with source as (
     select * from {{ source('synthea_raw', 'conditions') }}
@@ -242,7 +242,7 @@ cleaned as (
 select * from cleaned
 ```
 
-**`stg_medications.sql`** — normalize medication records
+**`stg_medications.sql`** - normalize medication records
 ```sql
 with source as (
     select * from {{ source('synthea_raw', 'medications') }}
@@ -270,7 +270,7 @@ select * from cleaned
 
 ### Mart models
 
-**`mart_gap_registry.sql`** — the core output table (parameterized by config via macro)
+**`mart_gap_registry.sql`** - the core output table (parameterized by config via macro)
 ```sql
 -- This model is generated dynamically by the gap engine from YAML config
 -- Example output for heart failure use case:
@@ -308,7 +308,7 @@ gap_registry as (
 select * from gap_registry
 ```
 
-**`mart_quality_summary.sql`** — aggregate gap rate for dashboard KPIs
+**`mart_quality_summary.sql`** - aggregate gap rate for dashboard KPIs
 ```sql
 select
     count(*)                                                    as total_patients,
@@ -554,16 +554,16 @@ def export_audit_csv():
 
 The dashboard connects directly to the Snowflake mart tables. Three pages:
 
-**Page 1 — Care Gap Registry**
+**Page 1 - Care Gap Registry**
 - KPI cards: Total patients, Gap rate %, Patients with gap, Patients on therapy
 - Table: patient-level gap registry with filter by age, gender, gap type
 - Bar chart: gap rate by demographic segment
 
-**Page 2 — Cohort Trends**
+**Page 2 - Cohort Trends**
 - Line chart: gap rate over time (by `gap_identified_at` month)
 - Funnel: diagnosed → qualifying encounter → on therapy → gap closed
 
-**Page 3 — AI Abstraction Audit**
+**Page 3 - AI Abstraction Audit**
 - Table of every agent abstraction with confidence score, evidence quote
 - Accuracy rate: agent result vs rule-based SQL result (validation)
 - Filter by condition, date range, confidence threshold
@@ -579,7 +579,7 @@ The dashboard connects directly to the Snowflake mart tables. Three pages:
 - Anthropic API key
 - Java 11+ (for Synthea)
 
-### Step 1 — Generate synthetic data
+### Step 1 - Generate synthetic data
 ```bash
 # Download and run Synthea
 git clone https://github.com/synthetichealth/synthea.git
@@ -588,7 +588,7 @@ cd synthea
 # This generates ~10K synthetic patients as CSV files
 ```
 
-### Step 2 — Load to Snowflake
+### Step 2 - Load to Snowflake
 ```bash
 cd cliniq
 pip install -r requirements.txt
@@ -597,7 +597,7 @@ cp .env.example .env
 python ingestion/load_to_snowflake.py
 ```
 
-### Step 3 — Run dbt models
+### Step 3 - Run dbt models
 ```bash
 cd dbt_cliniq
 cp profiles.yml.example profiles.yml
@@ -607,7 +607,7 @@ dbt run
 dbt test
 ```
 
-### Step 4 — Run gap analysis for a condition
+### Step 4 - Run gap analysis for a condition
 ```bash
 # Generate SQL for heart failure
 python gap_engine/generate_gap_sql.py \
@@ -624,7 +624,7 @@ python gap_engine/generate_gap_sql.py \
   --output gap_engine/output/diabetes_gaps.sql
 ```
 
-### Step 5 — Run the AI abstraction agent
+### Step 5 - Run the AI abstraction agent
 ```bash
 export ANTHROPIC_API_KEY=your_key_here
 python agent/cliniq_agent.py \
@@ -652,19 +652,19 @@ python agent/cliniq_agent.py \
 ## Interview talking points
 
 **"Why did you build this?"**
-> Most clinical quality projects I saw were disease-specific — someone builds a diabetes dashboard, someone else builds a cardiac one. I wanted to build one architecture where you swap a config file and it runs for any population. The YAML-driven approach means a new disease area is a 10-minute config, not a month of SQL rewrites.
+> Most clinical quality projects I saw were disease-specific - someone builds a diabetes dashboard, someone else builds a cardiac one. I wanted to build one architecture where you swap a config file and it runs for any population. The YAML-driven approach means a new disease area is a 10-minute config, not a month of SQL rewrites.
 
 **"How does the AI layer work?"**
-> The LangGraph agent reads unstructured clinical notes and extracts the same data points that a human abstractor would look for — qualifying diagnoses, active medications, gap reasoning. Every inference writes to an audit log with the evidence quote and confidence score. That governance layer was deliberate — in healthcare AI, you can't just run a model and trust the output. You need to know exactly why it said what it said.
+> The LangGraph agent reads unstructured clinical notes and extracts the same data points that a human abstractor would look for - qualifying diagnoses, active medications, gap reasoning. Every inference writes to an audit log with the evidence quote and confidence score. That governance layer was deliberate — in healthcare AI, you can't just run a model and trust the output. You need to know exactly why it said what it said.
 
 **"What would it take to add a new disease?"**
 > Write a YAML config with the ICD-10 codes, target medications or lab thresholds, and the gap logic definition. Then run `generate_gap_sql.py --config your_new_condition.yaml`. The dbt models, the agent, and the dashboard all pick it up automatically.
 
 **"How did you handle data quality?"**
-> dbt tests enforce no duplicate patients, valid ICD-10 code formats, and gap flag logic consistency. The staging layer also tracks record-level deduplication — same approach I used at Endeavor Health when cleaning ~500K patient records with ~44% duplication.
+> dbt tests enforce no duplicate patients, valid ICD-10 code formats, and gap flag logic consistency. The staging layer also tracks record-level deduplication - same approach I used at Endeavor Health when cleaning ~500K patient records with ~44% duplication.
 
 **"Why Synthea instead of real data?"**
-> Synthea generates clinically realistic synthetic patients — realistic diagnoses, medication histories, encounter patterns — without any PHI concerns. It let me develop and test the full pipeline in a way I could share publicly, which a real EHR dataset never would.
+> Synthea generates clinically realistic synthetic patients - realistic diagnoses, medication histories, encounter patterns - without any PHI concerns. It let me develop and test the full pipeline in a way I could share publicly, which a real EHR dataset never would.
 
 ---
 
